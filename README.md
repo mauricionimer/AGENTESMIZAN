@@ -39,16 +39,25 @@ decisão.
   assistente virtual.
 - **Custo controlado:** teto diário por empresa; acima dele o agente para.
 
+## Documentação
+
+- [Fluxo dos agentes](docs/AGENTE_FLUXO.md): entradas, lógica e saídas de cada agente, com diagramas
+- [Business Model Canvas](docs/BMC.md) (versão 1)
+- [Roteiro da demonstração e do pitch](docs/ROTEIRO_DEMO_E_PITCH.md)
+
 ## Andamento
 
-| Parte | Data | Situação |
-|---|---|---|
-| 1. Base: estado do caso, cliente de IA, rastreio e orquestrador | 16/10 | Feita, com testes |
-| 2. Auditor, ferramentas, Triagem e Negociador | 17–18/10 | A fazer |
-| 3. Telas e primeira conversa real | 19/10 | A fazer |
-| 4. Demonstração de ponta a ponta | 20/10 | A fazer |
-| 5. Acompanhamento e Estrategista | 21/10 | A fazer |
-| 6. Bateria de cenários e documentação do fluxo | 22/10 | A fazer |
+| Parte | Situação |
+|---|---|
+| Orquestrador, estado do caso, rastreio e controle de custo | Feito, com testes |
+| Auditor com política versionada e tela de Política | Feito, com testes |
+| Triagem, Negociador (14 ferramentas) e travas de saída | Feito, testado com IA simulada |
+| Acompanhamento: lembretes, atrasos e pagamentos | Feito, com testes |
+| Estrategista: quatro grupos e grupo sorteado | Feito, com testes |
+| Telas: Conversa, Plano do dia, Política, Central de orquestração | Feito |
+| Bateria de 63 cenários (181 conferências) | Feito; nota 100 com IA simulada |
+| Primeira conversa com a IA de verdade e nota real da bateria | A fazer (19/10) |
+| Demonstração de ponta a ponta com carteira fictícia | A fazer (20/10) |
 
 O código do Mizan fica em repositório privado. Este repositório reúne a
 documentação, o fluxo dos agentes e as entregas do AKCIT Camp.
