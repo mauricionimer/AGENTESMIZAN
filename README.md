@@ -44,6 +44,7 @@ decisão.
 - [Fluxo dos agentes](docs/AGENTE_FLUXO.md): entradas, lógica e saídas de cada agente, com diagramas
 - [Business Model Canvas](docs/BMC.md) (versão 1)
 - [Roteiro da demonstração e do pitch](docs/ROTEIRO_DEMO_E_PITCH.md)
+- [Levantamento das alternativas](docs/ALTERNATIVAS.md), com fontes
 
 ## Andamento
 
