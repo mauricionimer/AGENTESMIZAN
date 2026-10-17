@@ -35,7 +35,7 @@ flowchart LR
 |---|---|---|---|
 | Orquestrador | Reativo baseado em modelo | Recebe eventos, decide quem age, guarda o estado de cada caso | Não |
 | Triagem | Reflexo + classificador | Entende a intenção da mensagem | Só para o que as regras não decidem (modelo barato) |
-| Negociador | Baseado em objetivos, com ferramentas | Conversa e propõe acordos usando 15 ferramentas; tira dúvidas pela base de conhecimento | Sim |
+| Negociador | Baseado em objetivos, com ferramentas | Conversa e propõe acordos usando 16 ferramentas; tira dúvidas pela base de conhecimento | Sim |
 | Auditor | Baseado em regras | Confere cada ação contra a política; palavra final | Não |
 | Acompanhamento | Reativo | Lembretes, atrasos, pagamentos | Não (mensagens prontas) |
 | Estrategista | Baseado em utilidade | Divide a carteira em grupos e sorteia o grupo de controle | Não |
@@ -107,14 +107,23 @@ ferramenta passa pelo Auditor antes de executar:
 | consultar_politica | Limites internos (não divulgados de saída) |
 | consultar_base | Dúvida do devedor sobre direitos: resposta da base com a fonte (seção 3.1) |
 | abrir_contestacao, suspender_cobranca, transferir_para_humano, registrar_pagamento_informado | Segurança: sempre permitidas |
+| marcar_atendimento_humano | O devedor aceita falar com uma pessoa num dia e hora: vai para a agenda do responsável ou, sem responsável, para o administrador escolher o operador; o Auditor confere data e horário |
 
 Saída: o texto da resposta, que passa pelas **travas de saída** antes de sair:
 todo valor, percentual e número de parcelas precisa ter vindo de uma
 ferramenta; toda lei, artigo ou súmula citados precisam ter vindo da base de
 conhecimento nesta conversa; nada de ameaça, constrangimento ou exposição
 (Código de Defesa do Consumidor, art. 42); nada de CPF ou identificador
-interno. Reprovou, a IA tem uma nova chance com o motivo; reprovou de novo,
-uma pessoa assume. **O agente não inventa nem valor nem lei.**
+interno; **nada de dizer que fez sem ter feito**: "agendei", "registrei",
+"transferi" só saem se a ferramenta correspondente rodou com sucesso naquela
+resposta; e a IA nunca diz que um pagamento foi confirmado (só o banco
+confirma). Reprovou, a IA tem uma nova chance com o motivo; reprovou de novo,
+uma pessoa assume. **O agente não inventa nem valor, nem lei, nem ação.**
+
+A trava de ação nasceu de um teste com IA de verdade: o devedor pediu para ser
+chamado na segunda às 14h e o agente respondeu "Já agendei" sem ter chamado
+ferramenta nenhuma. Hoje essa resposta é barrada, o agente agenda de verdade e
+o retorno aparece na aba Agenda, com data e hora.
 
 ### 3.1 De onde vêm os fatos (RAG)
 
@@ -235,9 +244,9 @@ para quem precisa de contato.
 
 ## 8. Como medimos a qualidade
 
-Bateria de 68 cenários roteirizados (caminho feliz, negociação, desvios, datas
-e pagamentos, política, ataques, orquestração, falhas e conhecimento),
-conferidos por código em 195 conferências, com nota por critério:
+Bateria de 71 cenários roteirizados (caminho feliz, negociação, desvios, datas
+e pagamentos, política, ataques, orquestração, falhas, conhecimento e
+honestidade), conferidos por código em 204 conferências, com nota por critério:
 
 | Critério | Peso |
 |---|---|

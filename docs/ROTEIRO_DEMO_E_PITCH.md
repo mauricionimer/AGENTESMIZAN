@@ -42,7 +42,11 @@ entram aqui.)
    **"A IA pode até ser enganada. O Auditor não conversa: ele confere a regra."**
 5. *Política*: o gestor baixa o desconto máximo na aba Política. Na mensagem
    seguinte o agente já obedece — e a decisão grava a versão nova.
-6. *Pagamento* (se sobrar tempo): o botão faz o papel do banco confirmando o
+6. *Pessoa em dia e hora* (se sobrar tempo): o "devedor" pede uma reunião
+   na segunda às 14h. O agente marca o atendimento, a pessoa assume o caso e o
+   compromisso aparece na aba Agenda, onde o administrador escolhe quem atende.
+   Frase: "Quando a pessoa quer gente, o agente marca com gente."
+7. *Pagamento* (se sobrar tempo): o botão faz o papel do banco confirmando o
    pagamento; o agente agradece e o acordo à vista vira quitado.
 
 **2:00–2:30 · Como funciona e por que não é robô de cobrança.** Orquestrador,
@@ -79,7 +83,10 @@ medido contra o grupo sorteado.
   controlador dos dados e o Mizan, o operador.
 - **Quanto custa por conversa?** Medido pelo próprio agente em cada passo
   (aparece na tela).
-- **Como vocês sabem que funciona?** Bateria de 68 cenários e 195 conferências
+- **E se a IA disser que fez algo que não fez?** Já aconteceu num teste: o
+  agente disse "já agendei" sem agendar. Virou trava: frase de ação só sai se
+  a ferramenta rodou, e virou cenário da bateria.
+- **Como vocês sabem que funciona?** Bateria de 71 cenários e 204 conferências
   feitas por código, nota por versão do prompt. Com a IA simulada, ela prova
   que as travas seguram o erro; com a IA de verdade, mede o modelo. No
   cliente, comparação com o grupo sorteado. (Não dizer que a nota 100 é do
