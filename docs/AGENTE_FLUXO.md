@@ -6,6 +6,12 @@ testado; o que ainda não existe aparece como tal.
 
 > O Mizan decide, mede e prova; o agente executa dentro das regras do banco.
 
+**Princípio:** a IA decide; o código só impede o que é proibido e garante o que
+precisa ser exato (valores, limites da política, sorteio do grupo de
+comparação, selo de evidência). Todo agente com IA tem um caminho em código
+para quando a IA falha, está desligada ou responde algo que não serve, e cada
+agente liga e desliga sozinho por uma variável (`MIZAN_IA_PAPEIS`), sem deploy.
+
 ## 1. Visão geral
 
 ```mermaid
@@ -21,6 +27,7 @@ flowchart LR
     T --> N[Negociador]
     O --> A[Acompanhamento]
     O --> S[Estrategista]
+    N -- conversa delicada --> SV[Supervisor]
     N -- cada ação --> AU{Auditor<br/>política com versão}
     A -- cada contato --> AU
     S -- cada contato --> AU
@@ -28,18 +35,24 @@ flowchart LR
     AU -- bloqueada --> B[Regra registrada]
     N -- dúvida sobre direitos --> KB[(Base do devedor<br/>lei e súmula com fonte)]
     N -. falha ou pedido .-> H[Pessoa da equipe]
+    SV -. resumo do caso .-> H
     X --> RT[(Rastreio: passo, regra,<br/>versão, tokens, custo)]
+    T & N & A & S & SV -. anotam .-> CD[(Caderno do caso)]
+    CD -. lido por .-> N & A & S
+    X --> C[Cientista<br/>agente x sorteado] -. recomendação aprovada<br/>por uma pessoa .-> S
 ```
 
 | Agente | Tipo (curso, cap. 1.4) | Faz | Usa IA? |
 |---|---|---|---|
 | Orquestrador | Reativo baseado em modelo | Recebe eventos, decide quem age, guarda o estado de cada caso | Não |
-| Triagem | Reflexo + classificador | Entende a intenção da mensagem | Só para o que as regras não decidem (modelo barato) |
+| Triagem | Reflexo + classificador | Entende intenção, emoção, urgência e ironia | Sim, depois das regras de segurança (que vencem a IA) |
 | Negociador | Baseado em objetivos, com ferramentas | Conversa e propõe acordos usando 16 ferramentas; tira dúvidas pela base de conhecimento | Sim |
-| Auditor | Baseado em regras | Confere cada ação contra a política; palavra final | Não |
-| Acompanhamento | Reativo | Lembretes, atrasos, pagamentos | Não (mensagens prontas) |
-| Estrategista | Baseado em utilidade | Divide a carteira em grupos e sorteia o grupo de controle | Não |
-| Pessoa | Humano | Recebe o caso sempre que algo sai do previsto | — |
+| Auditor | Baseado em regras | Confere cada ação contra a política; palavra final | Não, de propósito |
+| Acompanhamento | Reativo + decisão | Em cada data, escolhe o que fazer e escreve a mensagem | Sim, dentro de um cardápio fechado; reserva: mensagem pronta |
+| Estrategista | Baseado em utilidade | Quem cobrar e o sorteio: código. Como abordar: IA, com o bandit como conselheiro | Sim, para até 20 devedores por dia |
+| Supervisor | Revisor | Resume o caso para a equipe; revisa o tom em conversa delicada | Sim; não libera nada |
+| Cientista | Analista | Compara agente e grupo sorteado e propõe o próximo passo | Interpreta; as contas e o selo são em código |
+| Pessoa | Humano | Recebe o caso sempre que algo sai do previsto; aprova recomendações | — |
 
 ## 2. Orquestrador
 
@@ -87,12 +100,23 @@ nunca como instrução. Lógica: regras em código para o que não pode errar
 (pedido para parar, pessoa errada, "não reconheço", pedido de atendente,
 tentativa de manipulação, sinais de sofrimento); essas regras vencem a IA e
 não custam nada. O resto vai a um modelo barato, que devolve JSON validado:
-intenção, confiança, valores e datas citados, sinais de risco. Saída: a rota
-do grafo.
+intenção, confiança, valores e datas citados, sinais de risco, **emoção**
+(calmo, ansioso, irritado, triste, desesperado), **urgência** e **ironia**.
+Campo inválido vira o padrão, sem derrubar a triagem. Saída: a rota do grafo
+e a leitura, que vai para o Negociador e, quando foge do normal, para o
+caderno do caso.
+
+Ironia muda o que pode acontecer: "ah claro, aceito, vou pagar com o dinheiro
+que eu não tenho" não vira acordo. O Auditor bloqueia o aceite nessa mensagem
+(regra R13) e o agente confirma o que a pessoa quer de verdade. Medido com a
+IA de verdade (Gemini flash-lite) em 10 frases com resposta esperada: 10
+acertos, incluindo duas ironias e duas frases parecidas que não eram ironia.
 
 **Negociador.** Entrada: um resumo do caso escrito pelo sistema (situação,
 identidade confirmada ou não, acordo vigente, simulações válidas, objetivo) e
-o histórico recente. Lógica: ciclo de ferramentas próprio, em que cada
+o histórico recente, mais a leitura da Triagem (emoção, urgência, ironia), a
+estratégia escolhida pelo Estrategista (tom e oferta inicial) e as últimas
+notas do caderno do caso. Lógica: ciclo de ferramentas próprio, em que cada
 ferramenta passa pelo Auditor antes de executar:
 
 | Ferramenta | Para |
@@ -124,6 +148,22 @@ A trava de ação nasceu de um teste com IA de verdade: o devedor pediu para ser
 chamado na segunda às 14h e o agente respondeu "Já agendei" sem ter chamado
 ferramenta nenhuma. Hoje essa resposta é barrada, o agente agenda de verdade e
 o retorno aparece na aba Agenda, com data e hora.
+
+**Revisão do Supervisor.** Só em conversa delicada (pessoa irritada ou
+desesperada, alerta de manipulação ou resposta já barrada nas travas), o
+Supervisor lê a resposta antes de sair e aprova ou pede uma reescrita, uma
+vez. A reescrita passa de novo pelas travas. Ele não escreve para o devedor e
+não libera nada; se falhar, a resposta segue para as travas como antes.
+
+### Caderno do caso (como os agentes conversam entre si)
+
+Cada agente anota no caso o que decidiu e por quê, em uma linha: o
+Estrategista ("abordar, tom acolhedor, começa por parcelado: atraso longo"),
+a Triagem ("irritado, ironia"), o Negociador (montado em código a partir das
+ferramentas que rodaram, nunca do texto da IA), o Acompanhamento, o
+Supervisor e a equipe. Ficam as 15 últimas; o Negociador lê as 6 últimas, e o
+Acompanhamento e o Estrategista também leem. O caderno nunca guarda o texto
+do devedor, e um filtro tira CPF e telefone. Ele aparece na tela da Conversa.
 
 ### 3.1 De onde vêm os fatos (RAG)
 
@@ -187,6 +227,7 @@ política. Tudo vai para o rastreio. As regras têm código, que aparece na tela
 | R8_SIMULACAO | Aceite só de simulação do sistema, válida, do mesmo caso, mesmas condições |
 | R10_IDENTIDADE | Acordo só depois de confirmar a identidade |
 | R11_DATA / R12_REMARCACOES | Data depois de hoje e dentro do prazo; limite de remarcações |
+| R13_IRONIA | Aceite bloqueado quando a Triagem viu ironia na mensagem |
 
 A política tem versão: o gestor muda na tela, a versão anterior fica guardada
 e o agente obedece a partir da mensagem seguinte.
@@ -196,9 +237,19 @@ e o agente obedece a partir da mensagem seguinte.
 **Entradas:** as promessas na agenda de cada caso e os pagamentos confirmados
 pelo banco.
 
+Em cada data, a IA lê o caso e o caderno e escolhe uma ação de um **cardápio
+fechado** (lembrar, esperar, procurar, oferecer nova data, chamar uma pessoa,
+esperar mais uma vez) e escreve a mensagem para aquela pessoa. O código
+confere: ação fora do cardápio, valor diferente do compromisso, ameaça ou
+"já fiz" sem ter feito levam a uma reescrita; reprovou de novo, sai a mensagem
+pronta de sempre. "Esperar mais" vale uma vez por compromisso, com volta
+marcada. Com a IA de verdade: pessoa ansiosa no caderno → ofereceu nova data
+com acolhimento; irritada e com acordo quebrado antes → chamou uma pessoa sem
+mandar mensagem.
+
 | Situação | O que acontece |
 |---|---|
-| Vence amanhã ou hoje | Lembrete com valor e data (mensagem pronta) |
+| Vence amanhã ou hoje | Lembrete com valor e data |
 | Vence no sábado ou domingo | Conta no dia útil seguinte |
 | Pagamento confirmado | Promessa cumprida; acordo à vista vira quitado; agradece |
 | Pagou menos | Mostra o que falta; a baixa parcial fica com a equipe |
@@ -229,13 +280,62 @@ sorteio fixo por devedor, segue sem o agente. Comparar quanto entrou em cada
 grupo, por real de dívida, é o que mede o efeito do agente sem a desculpa de
 "ele pegou os casos mais fáceis".
 
-**Saída:** o plano do dia na tela e, ao aplicar, a primeira mensagem (pronta)
-para quem precisa de contato.
+**Como abordar (IA):** para os primeiros 20 do grupo de contato por dia, a IA
+decide abordar agora ou adiar (até 7 dias), o tom e a oferta para começar. Ela
+vê uma **ficha fechada**: valor, atraso, produto, faixa de chance, o caderno e
+a recomendação do **bandit** (o modelo do Mizan que aprende qual oferta
+funciona com os pagamentos reais). Nada de região, renda, idade, CPF ou nome;
+um teste falha se algum desses aparecer. Com o bandit já calibrado, ela segue a
+recomendação dele; pode discordar com motivo, e isso fica registrado. O código
+confere: oferta fora da política, número ou ameaça na primeira mensagem,
+adiamento fora do prazo → abordagem pronta de sempre. Com a IA de verdade:
+seguiu o bandit calibrado; usou tom acolhedor em dívida antiga; adiou quem
+tinha pedido para falar só depois do dia 25.
+
+O sorteio do grupo de comparação continua em código: precisa ser sorteio de
+verdade para provar o efeito.
+
+**Saída:** o plano do dia na tela, com o raciocínio da IA em cada devedor
+analisado, e a primeira mensagem para quem precisa de contato.
+
+## 6.1 Supervisor
+
+**Resumo para a equipe.** Quando o caso vai para uma pessoa (transferência,
+atendimento marcado ou decisão do Acompanhamento), o Supervisor lê o caderno e
+as últimas mensagens e escreve: situação, o que foi oferecido, o que a pessoa
+quer, como ela está e o próximo passo. O resumo vai para a Agenda e para o
+caso, sem CPF nem telefone; se a IA falhar, fica o resumo curto de antes.
+
+**Revisão de tom:** ver a seção 3. Com a IA de verdade, reprovou "o débito
+permanece em aberto e deve ser regularizado" dito a uma pessoa irritada e
+aprovou uma resposta acolhedora.
+
+## 6.2 Cientista (aba Laboratório)
+
+**Entradas:** os casos do grupo de contato (procurados pelo agente e
+sorteados), os pagamentos confirmados e o que o bandit acumulou.
+
+**Lógica:** as contas são de ferramentas em código: taxa de pagamento com
+intervalo de 95% (Wilson e Newcombe), real recebido por real de dívida
+(bootstrap), quebra de acordo, comparação da composição dos grupos e
+segmentos com pelo menos 30 casos por grupo. O **selo de evidência** também é
+decidido em código: *sem evidência* (menos de 30 casos por grupo ou intervalo
+que cruza zero), *indício* (efeito, mas grupos com composição diferente) ou
+*evidência*. A IA formula até 3 hipóteses e escreve o relatório e uma
+recomendação. Travas: todo número precisa ter saído das contas; "comprovado",
+"causou" ou "há evidência" sem o selo certo são barrados; cada frase é
+conferida com o selo da sua própria métrica; recomendação de oferta se apoia
+no bandit, que sugere mas não prova.
+
+**Saída:** uma recomendação versionada, que nasce *proposta*. Só o
+administrador aprova ou recusa (fica na auditoria). A aprovada entra como
+orientação na ficha do Estrategista; não muda a política nem o bandit.
 
 ## 7. LGPD e segurança
 
 - A IA recebe o primeiro nome e, depois de confirmada a identidade, os valores
-  da dívida. Nunca CPF completo, endereço ou renda.
+  da dívida. Nunca CPF completo, endereço ou renda. O Estrategista vê uma ficha
+  sem nome, região, renda ou idade.
 - A primeira mensagem diz que é um assistente virtual da empresa.
 - O devedor pode pedir uma pessoa a qualquer momento.
 - O rastreio guarda tipos de erro e regras, nunca o texto pessoal.
@@ -244,9 +344,11 @@ para quem precisa de contato.
 
 ## 8. Como medimos a qualidade
 
-Bateria de 71 cenários roteirizados (caminho feliz, negociação, desvios, datas
-e pagamentos, política, ataques, orquestração, falhas, conhecimento e
-honestidade), conferidos por código em 204 conferências, com nota por critério:
+Bateria de 81 cenários roteirizados (caminho feliz, negociação, desvios, datas
+e pagamentos, política, ataques, orquestração, falhas, conhecimento,
+honestidade, integração pelo caderno, leitura de emoção e ironia,
+Acompanhamento com IA e Supervisor), conferidos por código em 226
+conferências, com nota por critério:
 
 | Critério | Peso |
 |---|---|
@@ -261,12 +363,15 @@ honestidade), conferidos por código em 204 conferências, com nota por critéri
 Com a IA simulada, a bateria confere o código a cada mudança, sem custo: a
 nota 100 prova que as travas e o fluxo seguram o erro, **não** que o modelo
 negocia bem. Com a IA de verdade, a mesma bateria mede a qualidade das
-decisões do modelo. A nota com a IA de verdade ainda não foi medida. A nota é
-guardada por versão do prompt (hoje `negociador-v2`, que trouxe a base de
-conhecimento): toda troca de prompt ou de modelo passa pela bateria antes.
+decisões do modelo. A bateria completa com a IA de verdade ainda não foi
+rodada (a cota gratuita do Gemini não comporta); cada agente novo foi testado
+com a IA de verdade em situações escolhidas, e os resultados estão nas seções
+acima. A nota é guardada por versão do prompt (hoje `negociador-v7`,
+`triagem-v3`, `acompanhamento-v1`, `estrategista-v1`, `supervisor-v1`,
+`cientista-v1`): toda troca de prompt ou de modelo passa pela bateria antes.
 
-Além da bateria: 87 scripts de teste no código, inclusive a medição
-da busca da base de conhecimento.
+Além da bateria: 97 scripts de teste no código, inclusive a medição da busca
+da base de conhecimento, os ataques de manipulação e as travas do Cientista.
 
 ### 8.1 Como investigar uma resposta ruim
 
@@ -284,12 +389,12 @@ No negócio: dinheiro que entrou no grupo do agente contra o grupo sorteado.
 
 ## 9. O que ainda não existe
 
-- Conversa com a IA de verdade (a integração está pronta; falta a chave).
 - Canal real (WhatsApp): na demonstração, a conversa acontece na tela do Mizan.
 - Aprendizado pelo acordo cumprido (o Mizan aprenderia com o dinheiro que
   entrou, não com a promessa): planejado, depende de decisão do time.
-- Painel agente × grupo sorteado: o sorteio já existe; o painel de comparação
-  ainda não.
+- Resultado do Laboratório com dado real: na demonstração a carteira e os
+  pagamentos são fictícios, e a tela avisa isso.
+- Nota de tom da bateria com a IA de verdade (um juiz automático): planejada.
 - Memória longa da conversa (resumo das conversas antigas): hoje o agente vê
   as últimas 20 mensagens e o estado do caso.
 - Números de resultado: só depois de um piloto numa carteira real.
