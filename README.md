@@ -20,7 +20,7 @@ decisão.
 | Orquestrador | Recebe os eventos, decide quem age e guarda o estado de cada caso | Código |
 | Triagem | Entende a intenção da mensagem do devedor | IA (modelo barato) |
 | Estrategista | Divide a carteira em grupos e separa um grupo de controle sorteado | Código (usa a chance de pagamento estimada pelo Mizan) |
-| Negociador | Conversa com o devedor, propõe acordos e tira dúvidas com lei e súmula citadas, usando 15 ferramentas | IA |
+| Negociador | Conversa com o devedor, propõe acordos e tira dúvidas com lei e súmula citadas, usando 16 ferramentas | IA |
 | Auditor | Confere cada ação contra a política do banco e tem a palavra final | Código |
 | Acompanhamento | Cuida de datas, lembretes e pagamentos | Código |
 | Aprendizado | Aprende com o dinheiro que entrou de fato, não com promessas | Código (planejado, ainda não construído) |
@@ -32,6 +32,9 @@ decisão.
   sistema: nenhum número no texto sai da cabeça da IA.
 - **Nenhuma lei sem fonte.** Toda lei, artigo ou súmula que o agente cita vem
   da base de conhecimento, com o texto oficial; citação sem fonte é barrada.
+- **Nada de dizer que fez sem ter feito.** "Agendei", "registrei" ou
+  "transferi" só saem se a ferramenta rodou de verdade; pagamento, só o banco
+  confirma.
 - **O Auditor é código, não IA.** Toda ação passa por ele e fica registrada a
   regra que permitiu ou bloqueou.
 - **Na dúvida, uma pessoa.** Falha, contestação ou pedido do devedor levam o
@@ -54,13 +57,15 @@ decisão.
 |---|---|
 | Orquestrador, estado do caso, rastreio e controle de custo | Feito, com testes |
 | Auditor com política versionada e tela de Política | Feito, com testes |
-| Triagem, Negociador (15 ferramentas) e travas de saída | Feito, testado com IA simulada |
+| Triagem, Negociador (16 ferramentas) e travas de saída | Feito; testado com IA simulada e com IA de verdade (Gemini, 16/10) |
+| Agenda dos agentes e atendimento com pessoa em dia e hora | Feito, com testes (16/10) |
 | Base de conhecimento do devedor (RAG com fonte) e trava de citação | Feito, com testes e busca medida (16/10) |
 | Acompanhamento: lembretes, atrasos e pagamentos | Feito, com testes |
 | Estrategista: quatro grupos e grupo sorteado | Feito, com testes |
-| Telas: Conversa, Plano do dia, Política, Central de orquestração | Feito |
-| Bateria de 68 cenários (195 conferências) | Feito; nota 100 com IA simulada (prova as travas, não o modelo) |
-| Primeira conversa com a IA de verdade e nota real da bateria | A fazer (19/10) |
+| Telas: Conversa (cada passo com o agente que agiu), Plano do dia, Agenda, Política, Central | Feito |
+| Bateria de 71 cenários (204 conferências) | Feito; nota 100 com IA simulada (prova as travas, não o modelo) |
+| Primeira conversa com a IA de verdade | Feito (16/10, Gemini): manipulação, lei com fonte, agenda e atendimento |
+| Nota real da bateria com a IA de verdade | A fazer (19/10) |
 | Demonstração de ponta a ponta com carteira fictícia | A fazer (20/10) |
 
 O código do Mizan fica em repositório privado. Este repositório reúne a
