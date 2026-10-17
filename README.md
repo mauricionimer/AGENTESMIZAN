@@ -18,18 +18,25 @@ decisão.
 | Agente | O que faz | Tipo |
 |---|---|---|
 | Orquestrador | Recebe os eventos, decide quem age e guarda o estado de cada caso | Código |
-| Triagem | Entende a intenção da mensagem do devedor | IA (modelo barato) |
-| Estrategista | Divide a carteira em grupos e separa um grupo de controle sorteado | Código (usa a chance de pagamento estimada pelo Mizan) |
+| Estrategista | Quem cobrar e o sorteio do grupo de comparação: código. Como abordar cada devedor (tom, oferta, adiar), com o bandit do Mizan como conselheiro | Código + IA |
+| Triagem | Entende intenção, emoção, urgência e ironia da mensagem; regras de segurança vencem a IA | IA (modelo barato) |
 | Negociador | Conversa com o devedor, propõe acordos e tira dúvidas com lei e súmula citadas, usando 16 ferramentas | IA |
-| Auditor | Confere cada ação contra a política do banco e tem a palavra final | Código |
-| Acompanhamento | Cuida de datas, lembretes e pagamentos | Código |
-| Aprendizado | Aprende com o dinheiro que entrou de fato, não com promessas | Código (planejado, ainda não construído) |
-| Pessoa | Recebe o caso sempre que algo sai do previsto | Humano |
+| Acompanhamento | Em cada data, escolhe de um cardápio fechado (lembrar, oferecer nova data, chamar uma pessoa...) e escreve a mensagem | IA, com mensagem pronta como reserva |
+| Supervisor | Resume o caso para a equipe e revisa o tom em conversa delicada; não libera nada | IA |
+| Cientista | Compara agente e grupo sorteado e propõe o próximo passo; contas e selo de evidência em código | IA interpreta, código calcula |
+| Auditor | Confere cada ação contra a política do banco e tem a palavra final | Código, de propósito |
+| Pessoa | Recebe o caso sempre que algo sai do previsto e aprova as recomendações do Cientista | Humano |
+
+Os agentes se coordenam por um **caderno do caso**: cada um anota o que
+decidiu e por quê, e os outros leem antes de agir. Todo agente com IA tem um
+caminho em código para quando a IA falha, e cada um liga e desliga sozinho,
+sem deploy.
 
 ## Regras de projeto
 
-- **Só o Negociador fala com o devedor**, e só com valores calculados pelo
-  sistema: nenhum número no texto sai da cabeça da IA.
+- **A IA decide; o código impede o proibido.** Toda mensagem ao devedor passa
+  pelas travas: valor só se calculado pelo sistema, nenhum número da cabeça da
+  IA, nenhuma ameaça.
 - **Nenhuma lei sem fonte.** Toda lei, artigo ou súmula que o agente cita vem
   da base de conhecimento, com o texto oficial; citação sem fonte é barrada.
 - **Nada de dizer que fez sem ter feito.** "Agendei", "registrei" ou
@@ -62,8 +69,9 @@ decisão.
 | Base de conhecimento do devedor (RAG com fonte) e trava de citação | Feito, com testes e busca medida (16/10) |
 | Acompanhamento: lembretes, atrasos e pagamentos | Feito, com testes |
 | Estrategista: quatro grupos e grupo sorteado | Feito, com testes |
-| Telas: Conversa (cada passo com o agente que agiu), Plano do dia, Agenda, Política, Central | Feito |
-| Bateria de 71 cenários (204 conferências) | Feito; nota 100 com IA simulada (prova as travas, não o modelo) |
+| Agentes que pensam com IA: caderno do caso, Triagem com emoção e ironia, Acompanhamento, Estrategista com bandit, Supervisor, Cientista | Feito (17/10), com testes e cada um testado com IA de verdade (Gemini) |
+| Telas: Conversa (com o caderno do caso), Plano do dia (com o raciocínio da IA), Agenda, Política, Laboratório, Central | Feito |
+| Bateria de 81 cenários (226 conferências), 97 scripts de teste | Feito; nota 100 com IA simulada (prova as travas, não o modelo) |
 | Primeira conversa com a IA de verdade | Feito (16/10, Gemini): manipulação, lei com fonte, agenda e atendimento |
 | Nota real da bateria com a IA de verdade | A fazer (19/10) |
 | Demonstração de ponta a ponta com carteira fictícia | A fazer (20/10) |

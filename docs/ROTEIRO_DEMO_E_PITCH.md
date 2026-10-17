@@ -86,11 +86,21 @@ medido contra o grupo sorteado.
 - **E se a IA disser que fez algo que não fez?** Já aconteceu num teste: o
   agente disse "já agendei" sem agendar. Virou trava: frase de ação só sai se
   a ferramenta rodou, e virou cenário da bateria.
-- **Como vocês sabem que funciona?** Bateria de 71 cenários e 204 conferências
+- **Como vocês sabem que funciona?** Bateria de 81 cenários e 226 conferências
   feitas por código, nota por versão do prompt. Com a IA simulada, ela prova
   que as travas seguram o erro; com a IA de verdade, mede o modelo. No
   cliente, comparação com o grupo sorteado. (Não dizer que a nota 100 é do
   modelo real se essa rodada não tiver sido feita.)
+- **Por que vários agentes, e não um só?** Cada um tem um trabalho e um limite
+  diferente: a Triagem lê, o Estrategista decide como abordar, o Negociador
+  conversa, o Acompanhamento cuida das datas, o Supervisor revisa e resume, o
+  Cientista mede. Eles se coordenam pelo caderno do caso. O que precisa ser
+  exato (valores, limites, sorteio, selo de evidência) fica em código.
+- **A IA pode inventar que uma estratégia funciona?** Não: o Cientista não faz
+  conta. As contas e o selo de evidência são de código; texto com número que
+  não saiu das contas, ou com "comprovado" sem evidência, é barrado. E a
+  recomendação só vale depois que uma pessoa aprova. (Na demonstração os dados
+  são fictícios: mostrar o método, não o resultado.)
 - **Como investigariam uma resposta ruim?** Pelo id de rastreio: cada passo
   grava agente, regra, versões, tokens, custo e duração. A resposta ruim vira
   um cenário novo da bateria antes da correção.
