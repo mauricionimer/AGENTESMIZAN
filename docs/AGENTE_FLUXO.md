@@ -133,6 +133,15 @@ ferramenta passa pelo Auditor antes de executar:
 | abrir_contestacao, suspender_cobranca, transferir_para_humano, registrar_pagamento_informado | Segurança: sempre permitidas |
 | marcar_atendimento_humano | O devedor aceita falar com uma pessoa num dia e hora: vai para a agenda do responsável ou, sem responsável, para o administrador escolher o operador; o Auditor confere data e horário |
 
+Quando o caso vai para "com_pessoa", a mensagem de aviso ao devedor é texto fixo
+(não a IA): se a empresa cadastrou a disponibilidade de algum operador (dia da
+semana e faixa de horário, tabela `disponibilidade_operador`), o código escolhe
+o próximo horário real e cita nome e horário; sem disponibilidade cadastrada,
+cai num texto genérico, sem quebrar o fluxo. Essa mensagem é tratada como
+segurança e nunca é bloqueada pelo R3_FREQUENCIA (corrigido: antes, um devedor
+que já tinha batido o limite semanal de contatos podia pedir uma pessoa e não
+receber nenhuma resposta).
+
 Saída: o texto da resposta, que passa pelas **travas de saída** antes de sair:
 todo valor, percentual e número de parcelas precisa ter vindo de uma
 ferramenta; toda lei, artigo ou súmula citados precisam ter vindo da base de
@@ -344,13 +353,12 @@ orientação na ficha do Estrategista; não muda a política nem o bandit.
 
 ## 8. Como medimos a qualidade
 
-Bateria de 86 cenários roteirizados (caminho feliz, negociação, desvios, datas
+Bateria de 87 cenários roteirizados (caminho feliz, negociação, desvios, datas
 e pagamentos, política, ataques, orquestração, falhas, conhecimento,
 honestidade, integração pelo caderno, leitura de emoção e ironia,
-Acompanhamento com IA e Supervisor, mais os quatro cenários da revisão
-completa de 18/10: risco à vida com pedido de parar, aceite pagando hoje,
-"desculpe o engano, quero pagar" e CPF completo na identidade), conferidos
-por código em 245 conferências, com nota por critério:
+Acompanhamento com IA e Supervisor, mais os cenários da revisão completa de
+18/10 e o handoff com disponibilidade de operador de 19/10), conferidos
+por código em 249 conferências, com nota por critério:
 
 | Critério | Peso |
 |---|---|
@@ -372,7 +380,7 @@ acima. A nota é guardada por versão do prompt (hoje `negociador-v10`,
 `triagem-v5`, `acompanhamento-v2`, `estrategista-v2`, `supervisor-v3`,
 `cientista-v3`): toda troca de prompt ou de modelo passa pela bateria antes.
 
-Além da bateria: 105 scripts de teste no código, inclusive a medição da busca
+Além da bateria: 107 scripts de teste no código, inclusive a medição da busca
 da base de conhecimento, os ataques de manipulação e as travas do Cientista.
 Uma revisão completa do sistema (18/10/2026, código e telas, por área) corrigiu
 achados de todas as gravidades e subiu para produção; a nota 100 e os números

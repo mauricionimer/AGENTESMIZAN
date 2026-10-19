@@ -71,7 +71,7 @@ sem deploy.
 | Estrategista: quatro grupos e grupo sorteado | Feito, com testes |
 | Agentes que pensam com IA: caderno do caso, Triagem com emoção e ironia, Acompanhamento, Estrategista com bandit, Supervisor, Cientista | Feito (17/10), com testes e cada um testado com IA de verdade (Gemini) |
 | Telas: Conversa (com o caderno do caso), Plano do dia (com o raciocínio da IA), Agenda, Política, Laboratório, Central | Feito |
-| Bateria de 86 cenários (245 conferências), 105 scripts de teste | Feito; nota 100 com IA simulada (prova as travas, não o modelo) |
+| Bateria de 87 cenários (249 conferências), 107 scripts de teste | Feito; nota 100 com IA simulada (prova as travas, não o modelo) |
 | Primeira conversa com a IA de verdade | Feito (16/10, Gemini): manipulação, lei com fonte, agenda e atendimento |
 | Nota real da bateria com a IA de verdade | A fazer (19/10) |
 | Demonstração de ponta a ponta com carteira fictícia | A fazer (20/10) |

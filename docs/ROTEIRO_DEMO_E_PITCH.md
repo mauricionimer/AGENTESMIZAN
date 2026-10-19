@@ -86,7 +86,7 @@ medido contra o grupo sorteado.
 - **E se a IA disser que fez algo que não fez?** Já aconteceu num teste: o
   agente disse "já agendei" sem agendar. Virou trava: frase de ação só sai se
   a ferramenta rodou, e virou cenário da bateria.
-- **Como vocês sabem que funciona?** Bateria de 86 cenários e 245 conferências
+- **Como vocês sabem que funciona?** Bateria de 87 cenários e 249 conferências
   feitas por código, nota por versão do prompt. Com a IA simulada, ela prova
   que as travas seguram o erro; com a IA de verdade, mede o modelo. No
   cliente, comparação com o grupo sorteado. (Não dizer que a nota 100 é do
