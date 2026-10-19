@@ -344,11 +344,13 @@ orientação na ficha do Estrategista; não muda a política nem o bandit.
 
 ## 8. Como medimos a qualidade
 
-Bateria de 81 cenários roteirizados (caminho feliz, negociação, desvios, datas
+Bateria de 86 cenários roteirizados (caminho feliz, negociação, desvios, datas
 e pagamentos, política, ataques, orquestração, falhas, conhecimento,
 honestidade, integração pelo caderno, leitura de emoção e ironia,
-Acompanhamento com IA e Supervisor), conferidos por código em 226
-conferências, com nota por critério:
+Acompanhamento com IA e Supervisor, mais os quatro cenários da revisão
+completa de 18/10: risco à vida com pedido de parar, aceite pagando hoje,
+"desculpe o engano, quero pagar" e CPF completo na identidade), conferidos
+por código em 245 conferências, com nota por critério:
 
 | Critério | Peso |
 |---|---|
@@ -366,12 +368,15 @@ negocia bem. Com a IA de verdade, a mesma bateria mede a qualidade das
 decisões do modelo. A bateria completa com a IA de verdade ainda não foi
 rodada (a cota gratuita do Gemini não comporta); cada agente novo foi testado
 com a IA de verdade em situações escolhidas, e os resultados estão nas seções
-acima. A nota é guardada por versão do prompt (hoje `negociador-v7`,
-`triagem-v3`, `acompanhamento-v1`, `estrategista-v1`, `supervisor-v1`,
-`cientista-v1`): toda troca de prompt ou de modelo passa pela bateria antes.
+acima. A nota é guardada por versão do prompt (hoje `negociador-v10`,
+`triagem-v5`, `acompanhamento-v2`, `estrategista-v2`, `supervisor-v3`,
+`cientista-v3`): toda troca de prompt ou de modelo passa pela bateria antes.
 
-Além da bateria: 97 scripts de teste no código, inclusive a medição da busca
+Além da bateria: 105 scripts de teste no código, inclusive a medição da busca
 da base de conhecimento, os ataques de manipulação e as travas do Cientista.
+Uma revisão completa do sistema (18/10/2026, código e telas, por área) corrigiu
+achados de todas as gravidades e subiu para produção; a nota 100 e os números
+acima já são o estado pós-revisão.
 
 ### 8.1 Como investigar uma resposta ruim
 
